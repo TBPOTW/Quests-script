@@ -1,0 +1,100 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using TMPro;
+using System.Linq;
+
+public class Quests : MonoBehaviour
+{
+    public static Quests QInstance;
+
+    public GameObject questsPanel;
+    bool isActive; // активна ли плашка с квестами
+
+    [SerializeField] private List<QuestClass> _Quests = new List<QuestClass>();
+    public static Dictionary<string, QuestClass> questsBaseData = new Dictionary<string, QuestClass>(); // какие квесты завершены
+
+    private void Awake()
+    {
+        // Создаём Singleton
+        QInstance = this;
+        // иницилизируем базу данных
+        InitializeCutsceneDataBase();
+    }
+    private void Start()
+    {
+        isActive = true;
+        for (int i = 0; i < _Quests.Count; i++)
+        {
+            _Quests[i].questTitle.text = _Quests[i].questName;
+            _Quests[i].isDone = false;
+        }
+    }
+    
+    private void Update()
+    {
+        bool allQuestsDone = _Quests.All(quest => quest.isDone);
+        if (!allQuestsDone)
+            isActive = true;
+        else
+        {
+            int cnt = 0;
+            foreach (QuestClass quest in _Quests) // проверяем какие квесты игрок завершил
+            {
+                if (quest.isDone == true) cnt++;
+            }
+            if (cnt == _Quests.Count)
+                Invoke("setState", 5f);
+        }
+        foreach (QuestClass quest in _Quests)
+        {
+            if (quest.isDone == true)
+            {
+                quest.questTitle.fontStyle = FontStyles.Bold;
+            }
+        }
+
+        questsPanel.SetActive(isActive);
+    }
+
+    private void InitializeCutsceneDataBase()
+    {
+        // Перед заполнением на всякий случай очищаем нашу базу данных
+        questsBaseData.Clear();
+
+        // Заполняем questsBaseData ключами и классами которые мы укажем в листе _Quests
+        for (int i = 0; i < _Quests.Count; i++)
+        {
+            questsBaseData.Add(_Quests[i].questKey, _Quests[i]);
+        }
+    }
+    void setState()
+    {
+        isActive = false;
+    }
+
+    public bool returnPanelActive()
+    {
+        return isActive;
+    }
+
+    public void setDone(string key)
+    {
+        if (questsBaseData.ContainsKey(key)) // если ключ находится в словаре
+        {
+            questsBaseData[key].isDone = true; // завершили квест с названием key
+        }
+        else
+        {
+            Debug.LogError("Ключ " + key + " не найден в словаре");
+        }
+    }
+}
+[System.Serializable]
+public class QuestClass
+{
+    public string questKey; // ключ квеста по которому можно обращаться к квестам
+    public string questName; // название квеста
+    public TextMeshProUGUI questTitle; // объект квеста
+    public bool isDone; // завершен квест или нет
+}
