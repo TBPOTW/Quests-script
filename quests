@@ -88,28 +88,9 @@ public class Quests : SoundManager
         if (questsBaseData.ContainsKey(key)) // если ключ находится в словаре
         {
             questsComleted++;
-            Debug.Log("questC: " + questsComleted);
+            //Debug.Log("questC: " + questsComleted);
             questsBaseData[key].isDone = true; // завершили квест с названием key
             playSound(sounds[0], volume: 0.3f, p1: 1f, p2: 1f);
-
-            if (Main.instance.DAYS() == 2)
-            {
-                int rnd = Random.Range(0, 100);
-                print(rnd);
-                PlayerInteract.Instance.playerNeedsSmoke = true;
-                Debug.Log("smoke: " + PlayerInteract.Instance.playerNeedsSmoke);
-            }
-
-            if (key == "trashQuest")
-            {
-                GameObject obj = PlayerInteract.Instance.theDest.transform.GetChild(1).gameObject;
-                print(obj);
-                if (obj != null)
-                {
-                    PlayerInteract.Instance.Drop();
-                    Destroy(obj);
-                }
-            }
         }
         else
         {
