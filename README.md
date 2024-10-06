@@ -22,7 +22,7 @@ ___
 ## КАК ЭТО РАБОТАЕТ?
 #### Иницилизация базы данных
 В самом начале иницилизируем базу данных(все задания, которые вы ввели в инспекторе)
-```
+```C#
 private void InitializeQuestsDataBase()
 {
     // Перед заполнением на всякий случай очищаем нашу базу данных
@@ -41,7 +41,7 @@ private void InitializeQuestsDataBase()
 2. Помечаем это задание как выполненное
 3. производим звук выполненного задания(любой звук, какой вы захотите)
 Иначе выводим соответсующее сообщение в консоль
-```
+```csharp
 public void setDone(string key)
 {
     if (questsBaseData.ContainsKey(key)) // если ключ находится в словаре
@@ -61,7 +61,7 @@ public void setDone(string key)
 1. Проверяем находится ли данный ключ в словаре заданий
 2. Проверяем значение `isDone`
 3. Если `isDone == true`, то возвращаем `true`, иначе возвращаем `false` 
-```
+```c#
 public bool isQuestCompleted(string key)
 {
     if (questsBaseData.ContainsKey(key)) // если ключ находится в словаре
