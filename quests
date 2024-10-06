@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using System.Linq;
+using UnityEngine.UIElements;
 
-public class Quests : MonoBehaviour
+public class Quests : SoundManager
 {
     public static Quests QInstance;
 
@@ -14,13 +15,17 @@ public class Quests : MonoBehaviour
     [SerializeField] private List<QuestClass> _Quests = new List<QuestClass>();
     public static Dictionary<string, QuestClass> questsBaseData = new Dictionary<string, QuestClass>(); // какие квесты завершены
 
+    public int questsComleted = 0, allQuests;
     private void Awake()
     {
         // Создаём Singleton
         QInstance = this;
         // иницилизируем базу данных
-        InitializeCutsceneDataBase();
+        InitializeQuestsDataBase();
+        allQuests = _Quests.Count;
+        questsComleted = 0;
     }
+
     private void Start()
     {
         isActive = true;
@@ -30,7 +35,7 @@ public class Quests : MonoBehaviour
             _Quests[i].isDone = false;
         }
     }
-    
+   
     private void Update()
     {
         bool allQuestsDone = _Quests.All(quest => quest.isDone);
@@ -57,7 +62,7 @@ public class Quests : MonoBehaviour
         questsPanel.SetActive(isActive);
     }
 
-    private void InitializeCutsceneDataBase()
+    private void InitializeQuestsDataBase()
     {
         // Перед заполнением на всякий случай очищаем нашу базу данных
         questsBaseData.Clear();
@@ -75,19 +80,51 @@ public class Quests : MonoBehaviour
 
     public bool returnPanelActive()
     {
-        return isActive;
+        return questsPanel.activeSelf;
     }
 
     public void setDone(string key)
     {
         if (questsBaseData.ContainsKey(key)) // если ключ находится в словаре
         {
+            questsComleted++;
+            Debug.Log("questC: " + questsComleted);
             questsBaseData[key].isDone = true; // завершили квест с названием key
+            playSound(sounds[0], volume: 0.3f, p1: 1f, p2: 1f);
+
+            if (Main.instance.DAYS() == 2)
+            {
+                int rnd = Random.Range(0, 100);
+                print(rnd);
+                PlayerInteract.Instance.playerNeedsSmoke = true;
+                Debug.Log("smoke: " + PlayerInteract.Instance.playerNeedsSmoke);
+            }
+
+            if (key == "trashQuest")
+            {
+                GameObject obj = PlayerInteract.Instance.theDest.transform.GetChild(1).gameObject;
+                print(obj);
+                if (obj != null)
+                {
+                    PlayerInteract.Instance.Drop();
+                    Destroy(obj);
+                }
+            }
         }
         else
         {
             Debug.LogError("Ключ " + key + " не найден в словаре");
         }
+    }
+
+    public bool isQuestCompleted(string key)
+    {
+        if (questsBaseData.ContainsKey(key)) // если ключ находится в словаре
+        {
+            if (questsBaseData[key].isDone)
+                return true;
+        }
+        return false;
     }
 }
 [System.Serializable]
