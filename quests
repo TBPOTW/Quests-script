@@ -5,7 +5,7 @@ using TMPro;
 using System.Linq;
 using UnityEngine.UIElements;
 
-public class Quests : SoundManager
+public class Quests : MonoBehaviour
 {
     public static Quests QInstance;
 
@@ -88,9 +88,7 @@ public class Quests : SoundManager
         if (questsBaseData.ContainsKey(key)) // если ключ находится в словаре
         {
             questsComleted++;
-            //Debug.Log("questC: " + questsComleted);
             questsBaseData[key].isDone = true; // завершили квест с названием key
-            playSound(sounds[0], volume: 0.3f, p1: 1f, p2: 1f);
         }
         else
         {
